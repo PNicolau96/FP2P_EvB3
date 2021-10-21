@@ -66,7 +66,7 @@ S.SingularMatrixWarning='off';
 % (midway) pressure 
 [S.IN,S.IE, S.SE]=solvehemodyn(S.IN,S.IE,S.SE);
 
-n=70;
+n=100;
 contrastAgend(S,n);
 %% CALCULATE FURTHER REQUIRED DERIVED VARIABLES THAT RELY ON THE NETWORK
 % calculation of shear stress
