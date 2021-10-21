@@ -3,9 +3,12 @@ function [cfig,S] = contrastAgend(S,n)
 
 % Discrete time steps for the contrast agent concentrations over time (in
 % seconds):
+for i = 1:length(S.IE)
+    S.IE(i).Q = abs(S.IE(i).Q);
+end
 
 % Define AIF for first two segments
-A = 1; B = 3; C = 1.5;
+A = 1/4.459; B = 3; C = 1.5;
 AIF = zeros([1 n]);
 for t = 1:n
     AIF(t) = A* t^B *exp(-t/C);
@@ -84,6 +87,20 @@ for i = 3:length(S.IE)
     t_vector = linspace(1, n, n);
     c = sum(concentrationOut .* t_vector);
     S.IE(i).mtt = c / sum(concentrationOut);
+end
+
+for i = 3:length(S.IE)
+    % Get average contrast flow in vessel (= flow in the middel):
+    cAv = (S.IE(i).concentrationIn + S.IE(i).concentration) / 2;
+        % Concentration x Flow
+    S.IE(i).averageContrastFlow = cAv * S.IE(i).Q;
+    
+    % Get difference of In- and Outflow:
+    S.IE(i).contrastFlowDifference = S.IE(i).diff * S.IE(i).Q;
+    
+    % Get total residence of contrast in vessel:
+    S.IE(i).contrastResidence = S.IE(i).residence * S.IE(i).Q;
+    
 end
 
 %% Tobias
@@ -205,7 +222,8 @@ TotConc = [];
 for t=1:n
     ConcT = 0;
     for i=23:30
-        ConcT = ConcT + S.IE(i).concentration(t);
+        %ConcT = ConcT + S.IE(i).concentration(t);
+        ConcT = ConcT + S.IE(i).averageContrastFlow(t);
     end
     TotConc = [TotConc, ConcT];
 end
@@ -214,7 +232,8 @@ TotRes = [];
 for t=1:n
     ResT = 0;
     for i=23:30
-        ResT = ResT + S.IE(i).residence(t);
+        %ResT = ResT + S.IE(i).residence(t);
+        ResT = ResT + S.IE(i).contrastResidence(t);
     end
     TotRes = [TotRes, ResT];
 end
@@ -223,7 +242,8 @@ TotDiff = [];
 for t=1:n
     DiffT = 0;
     for i=23:30
-        DiffT = DiffT+ S.IE(i).diff(t);
+        %DiffT = DiffT+ S.IE(i).diff(t);
+        DiffT = DiffT+ S.IE(i).contrastFlowDifference(t);
     end
     TotDiff = [TotDiff, DiffT];
 end
@@ -234,7 +254,8 @@ TotConc2 = [];
 for t=1:n
     ConcT2 = 0;
     for i=15:22
-        ConcT2 = ConcT2 + S.IE(i).concentration(t);
+        %ConcT2 = ConcT2 + S.IE(i).concentration(t);
+        ConcT2 = ConcT2 + S.IE(i).averageContrastFlow(t);
     end
     TotConc2 = [TotConc2, ConcT2];
 end
@@ -243,7 +264,8 @@ TotRes2 = [];
 for t=1:n
     ResT2 = 0;
     for i=15:22
-        ResT2 = ResT2 + S.IE(i).residence(t);
+        %ResT2 = ResT2 + S.IE(i).residence(t);
+        ResT2 = ResT2 + S.IE(i).contrastResidence(t);
     end
     TotRes2 = [TotRes2, ResT2];
 end
@@ -252,7 +274,8 @@ TotDiff2 = [];
 for t=1:n
     DiffT2 = 0;
     for i=15:22
-        DiffT2 = DiffT2 + S.IE(i).diff(t);
+        %DiffT2 = DiffT2 + S.IE(i).diff(t);
+        DiffT2 = DiffT2 + S.IE(i).contrastFlowDifference(t);
     end
     TotDiff2 = [TotDiff2, DiffT2];
 end
@@ -263,7 +286,8 @@ TotConc3 = [];
 for t=1:n
     ConcT3 = 0;
     for i=39:46
-        ConcT3 = ConcT3 + S.IE(i).concentration(t);
+         %ConcT3 = ConcT3 + S.IE(i).concentration(t);
+        ConcT3 = ConcT3 + S.IE(i).averageContrastFlow(t);
     end
     TotConc3 = [TotConc3, ConcT3];
 end
@@ -272,7 +296,8 @@ TotRes3 = [];
 for t=1:n
     ResT3 = 0;
     for i=39:46
-        ResT3 = ResT3 + S.IE(i).residence(t);
+        %ResT3 = ResT3 + S.IE(i).residence(t);
+        ResT3 = ResT3 + S.IE(i).contrastResidence(t);
     end
     TotRes3 = [TotRes3, ResT3];
 end
@@ -281,7 +306,8 @@ TotDiff3 = [];
 for t=1:n
     DiffT3 = 0;
     for i=39:46
-        DiffT3 = DiffT3 + S.IE(i).diff(t);
+        %DiffT3 = DiffT3 + S.IE(i).diff(t);
+        DiffT3 = DiffT3 + S.IE(i).contrastFlowDifference(t);
     end
     TotDiff3 = [TotDiff3, DiffT3];
 end
@@ -292,7 +318,8 @@ TotConc4 = [];
 for t=1:n
     ConcT4 = 0;
     for i=31:38
-        ConcT4 = ConcT4 + S.IE(i).concentration(t);
+        %ConcT4 = ConcT4 + S.IE(i).concentration(t);
+        ConcT4 = ConcT4 + S.IE(i).averageContrastFlow(t);
     end
     TotConc4 = [TotConc4, ConcT4];
 end
@@ -301,7 +328,8 @@ TotRes4 = [];
 for t=1:n
     ResT4 = 0;
     for i=31:38
-        ResT4 = ResT4 + S.IE(i).residence(t);
+        %ResT4 = ResT4 + S.IE(i).residence(t);
+        ResT4 = ResT4 + S.IE(i).contrastResidence(t);
     end
     TotRes4 = [TotRes4, ResT4];
 end
@@ -310,7 +338,8 @@ TotDiff4 = [];
 for t=1:n
     DiffT4 = 0;
     for i=31:38
-        DiffT4 = DiffT4 + S.IE(i).diff(t);
+        %DiffT4 = DiffT4 + S.IE(i).diff(t);
+        DiffT4 = DiffT4 + S.IE(i).contrastFlowDifference(t);
     end
     TotDiff4 = [TotDiff4, DiffT4];
 end
@@ -531,8 +560,8 @@ plot(TotConc+TotConc3)
 plot(TotRes+TotRes3)
 plot(TotDiff+TotDiff3)
 title('Top Selection (Thrombus)')
-xlabel('t (unit?)')
-legend({'Concentration in the Box (unit)','Total Volume (unit)','Total Flow Rate'},'Location','northeast')
+xlabel('t [s]')
+legend({'Mean contrast flow in the Box (m^3/s)','Amount of contrast (m^3)','In- and Outflow (m^3/s)'},'Location','northeast')
 hold off
 
 figure %Jolien's Bottom Box (sum of 2+4)
@@ -541,8 +570,8 @@ plot(TotConc2+TotConc4)
 plot(TotRes2+TotRes4)
 plot(TotDiff2+TotDiff4)
 title('Bottom Selection (Thrombus)')
-xlabel('t (unit?)')
-legend({'Concentration in the Box (unit)','Total Volume (unit)','Total Flow Rate'},'Location','northeast')
+xlabel('t [s]')
+legend({'Mean contrast flow in the Box (m^3/s)','Amount of contrast (m^3)','In- and Outflow (m^3/s)'},'Location','northeast')
 hold off
 
 % End of our code

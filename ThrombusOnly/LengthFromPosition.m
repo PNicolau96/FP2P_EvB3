@@ -16,7 +16,7 @@ function IE=LengthFromPosition(IE,IN)
 % end
 
 %radii
-IE(1).r=0.001;%Simulated Thrombus
+IE(1).r=0.07;%Simulated Thrombus
 IE(2).r=2.07;
 
 IE(3).r=0.96;
