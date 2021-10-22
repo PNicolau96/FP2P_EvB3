@@ -1,8 +1,6 @@
 % Our code can start here, once the hemodynamics are solved
 function [cfig,S] = contrastAgend(S,n)
 
-% Discrete time steps for the contrast agent concentrations over time (in
-% seconds):
 for i = 1:length(S.IE)
     S.IE(i).Q = abs(S.IE(i).Q);
 end
@@ -36,9 +34,8 @@ for i = 3:length(S.IE)
     %but maybe seconds it a bit to coarse
     velocity = abs(S.IE(i).Q / (pi * S.IE(i).r^2));
     time_delay = round(S.IE(i).l / velocity) + 1;
- %----------------------------------------------------------------------
+ 
     %Implement Convolution inside a single vessel
-    % New code 22.10.
     totalIn = sum(concentrationIn);
     h = zeros([1 n]);
     for t = 1:n
@@ -56,20 +53,6 @@ for i = 3:length(S.IE)
     end
     totalOut = sum(concentrationOut);
     concentrationOut = concentrationOut * totalIn / totalOut;
-    %End of new code 22.10.
-    
-    %This we dont need anymore then:
-    %Shift the concentartion at entrance on t-axis by time_delay to get the
-    %concentration over time at vessel exit
-%     concentrationOut = zeros([1 n]);
-%     for j = 1:time_delay
-%         concentrationOut(j) = 0;
-%     end
-%     for j = (time_delay + 1):n
-%         index = j-time_delay;
-%         concentrationIn(index);
-%         concentrationOut(j) = concentrationIn(index);
-%     end
 
     S.IE(i).concentration = concentrationOut;
     S.IE(i).concentrationIn = concentrationIn;
@@ -103,23 +86,6 @@ for i = 3:length(S.IE)
     
 end
 
-%% Tobias
-% % Find path of highest flow rates
-% for i = 1:length(S.IE)
-%     endnode = S.IE(i).nodes(2);
-%     dFlow = 0;
-%     daughter = 0;
-%     for j = 1:length(S.IE)
-%         if S.IE(j).nodes(1) == endnode
-%             if S.IE(j).Q > dFlow
-%                 daughter = j;
-%                 dFlow = S.IE(j).Q;
-%             end
-%         end
-%     end
-%     S.IE(i).daughter = daughter;
-% end
-% 
 % %Find fastest path
 % for i = 1:length(S.IE)
 %     startnode = S.IE(i).nodes(1);
@@ -135,69 +101,7 @@ end
 %     end
 %     S.IE(i).fastParent = fastParent;
 % end
-% 
-% %Create list of MTT along path of highest flow
-% segment = S.IE(1);
-% mtts = [];
-% while true
-%     mtts(end + 1)=segment.mtt;
-%     if segment.daughter == 0
-%         break
-%     end
-%     segment = S.IE(segment.daughter);
-% end
-% 
-% %Create list of MTT along fastest path
-% segment1 = S.IE(end);
-% segment2 = S.IE(end-1);
-% if segment1.mtt < segment2.mtt
-%     segment = segment1;
-% else
-%     segment = segment2;
-% end
-% mtts2 = [];
-% while true
-%     mtts2(end + 1) = segment.mtt;
-%     if segment.fastParent == 0
-%         break
-%     end
-%     segment = S.IE(segment.fastParent);
-% end
-% mtts2 = flip(mtts2);
-% 
-% cfig=figure(1);clf; hold on 
-% 
-% for i = 1:3:61
-%     if true
-%         plot(S.IE(i).concentration);
-%         %plot(S.IE(i).concentrationIn);
-%         xlabel('time [ms]')
-%         ylabel('AIF / Concentration')
-%         title('Arterial Input Function')
-%     end
-% end
-% hold off
-% figure(2);
-% plot(S.IE(55).residence);
-% hold on
-% plot(S.IE(55).diff);
-% hold off
-% figure(3);
-% plot(mtts2,'--rs','LineWidth',2,...
-%                        'MarkerEdgeColor','k',...
-%                        'MarkerFaceColor','k',...
-%                        'MarkerSize',8)
-% hold on
-% plot(mtts,'--rs','LineWidth',2,...
-%                        'MarkerEdgeColor','k',...
-%                        'MarkerFaceColor','k',...
-%                        'MarkerSize',8)
-% xlabel('Segments Along Path')
-% ylabel('Mean Transit Time [s]')
-% title('Mean transit time along fastest path through network')
-% hold off
 
-%% Phil
 cfig=figure;clf ;
 title('Concentrations over Time (every segment)');
 hold on
