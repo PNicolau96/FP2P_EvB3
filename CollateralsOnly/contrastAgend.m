@@ -105,11 +105,11 @@ for i = 3:length(S.IE)
 end
 
 %% Tobias
-% % Find path of highest flow rates
-% for i = 1:length(S.IE)
-%     endnode = S.IE(i).nodes(2);
-%     dFlow = 0;
-%     daughter = 0;
+% Find path of highest flow rates
+%for i = 1:length(S.IE)
+%    endnode = S.IE(i).nodes(2);
+%    dFlow = 0;
+%    daughter = 0;
 %     for j = 1:length(S.IE)
 %         if S.IE(j).nodes(1) == endnode
 %             if S.IE(j).Q > dFlow
@@ -122,22 +122,22 @@ end
 % end
 % 
 % %Find fastest path
-% for i = 1:length(S.IE)
-%     startnode = S.IE(i).nodes(1);
-%     mttMin = 10^5;
-%     fastParent = 0;
-%     for j = 1:length(S.IE)
-%         if S.IE(j).nodes(2) == startnode
-%             if S.IE(j).mtt < mttMin
-%                 fastParent = j;
-%                 mttMin = S.IE(j).mtt;
-%             end
-%         end
-%     end
-%     S.IE(i).fastParent = fastParent;
-% end
+for i = 1:length(S.IE)
+    startnode = S.IE(i).nodes(1);
+    mttMin = 10^5;
+    fastParent = 0;
+    for j = 1:length(S.IE)
+        if S.IE(j).nodes(2) == startnode
+            if S.IE(j).mtt < mttMin
+                fastParent = j;
+                mttMin = S.IE(j).mtt;
+            end
+        end
+    end
+    S.IE(i).fastParent = fastParent;
+end
 % 
-% %Create list of MTT along path of highest flow
+%Create list of MTT along path of highest flow
 % segment = S.IE(1);
 % mtts = [];
 % while true
@@ -148,25 +148,34 @@ end
 %     segment = S.IE(segment.daughter);
 % end
 % 
-% %Create list of MTT along fastest path
-% segment1 = S.IE(end);
-% segment2 = S.IE(end-1);
-% if segment1.mtt < segment2.mtt
-%     segment = segment1;
-% else
-%     segment = segment2;
-% end
-% mtts2 = [];
-% while true
-%     mtts2(end + 1) = segment.mtt;
-%     if segment.fastParent == 0
-%         break
-%     end
-%     segment = S.IE(segment.fastParent);
-% end
-% mtts2 = flip(mtts2);
-% 
-% cfig=figure(1);clf; hold on 
+%Create list of MTT along fastest path
+segment1 = S.IE(end);
+segment2 = S.IE(end-1);
+if segment1.mtt < segment2.mtt
+    segment = segment1;
+else
+    segment = segment2;
+end
+mtts2 = [];
+while true
+    mtts2(end + 1) = segment.mtt;
+    if segment.fastParent == 0
+        break
+    end
+    segment = S.IE(segment.fastParent);
+end
+mtts2 = flip(mtts2);
+
+figure
+hold on
+plot(mtts2,'--rs','LineWidth',2,...
+                        'MarkerEdgeColor','k',...
+                        'MarkerFaceColor','k',...
+                        'MarkerSize',8);
+title('Mean Transit Time (with collaterals, no thrombus)')
+xlabel('Segments in the network')
+ylabel('Mean transit time [s]');
+hold off
 % 
 % for i = 1:3:61
 %     if true
@@ -200,11 +209,13 @@ end
 
 %% Phil
 cfig=figure;clf ;
-title('Concentrations over Time (every segment)');
+title('Concentrations of agent over time (every segment)');
 hold on
 for i = 1:length(S.IE)
     plot(S.IE(i).concentration);
 end
+xlabel('t [s]')
+ylabel('Concentration [-]')
 hold off
 
 figure

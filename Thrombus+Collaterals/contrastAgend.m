@@ -122,22 +122,22 @@ end
 % end
 % 
 % %Find fastest path
-% for i = 1:length(S.IE)
-%     startnode = S.IE(i).nodes(1);
-%     mttMin = 10^5;
-%     fastParent = 0;
-%     for j = 1:length(S.IE)
-%         if S.IE(j).nodes(2) == startnode
-%             if S.IE(j).mtt < mttMin
-%                 fastParent = j;
-%                 mttMin = S.IE(j).mtt;
-%             end
-%         end
-%     end
-%     S.IE(i).fastParent = fastParent;
-% end
+for i = 1:length(S.IE)
+    startnode = S.IE(i).nodes(1);
+    mttMin = 10^5;
+    fastParent = 0;
+    for j = 1:length(S.IE)
+        if S.IE(j).nodes(2) == startnode
+            if S.IE(j).mtt < mttMin
+                fastParent = j;
+                mttMin = S.IE(j).mtt;
+            end
+        end
+    end
+    S.IE(i).fastParent = fastParent;
+end
 % 
-% %Create list of MTT along path of highest flow
+%Create list of MTT along path of highest flow
 % segment = S.IE(1);
 % mtts = [];
 % while true
@@ -148,55 +148,39 @@ end
 %     segment = S.IE(segment.daughter);
 % end
 % 
-% %Create list of MTT along fastest path
-% segment1 = S.IE(end);
-% segment2 = S.IE(end-1);
-% if segment1.mtt < segment2.mtt
-%     segment = segment1;
-% else
-%     segment = segment2;
-% end
-% mtts2 = [];
-% while true
-%     mtts2(end + 1) = segment.mtt;
-%     if segment.fastParent == 0
-%         break
-%     end
-%     segment = S.IE(segment.fastParent);
-% end
-% mtts2 = flip(mtts2);
-% 
-% cfig=figure(1);clf; hold on 
-% 
-% for i = 1:3:61
-%     if true
-%         plot(S.IE(i).concentration);
-%         %plot(S.IE(i).concentrationIn);
-%         xlabel('time [ms]')
-%         ylabel('AIF / Concentration')
-%         title('Arterial Input Function')
-%     end
-% end
-% hold off
-% figure(2);
-% plot(S.IE(55).residence);
-% hold on
-% plot(S.IE(55).diff);
-% hold off
-% figure(3);
-% plot(mtts2,'--rs','LineWidth',2,...
-%                        'MarkerEdgeColor','k',...
-%                        'MarkerFaceColor','k',...
-%                        'MarkerSize',8)
-% hold on
-% plot(mtts,'--rs','LineWidth',2,...
-%                        'MarkerEdgeColor','k',...
-%                        'MarkerFaceColor','k',...
-%                        'MarkerSize',8)
-% xlabel('Segments Along Path')
-% ylabel('Mean Transit Time [s]')
-% title('Mean transit time along fastest path through network')
-% hold off
+%Create list of MTT along fastest path
+segment1 = S.IE(end);
+segment2 = S.IE(end-1);
+if segment1.mtt < segment2.mtt
+    segment = segment1;
+else
+    segment = segment2;
+end
+mtts2 = [];
+while true
+    mtts2(end + 1) = segment.mtt;
+    if segment.fastParent == 0
+        break
+    end
+    segment = S.IE(segment.fastParent);
+end
+if S.IE(1).mtt < S.IE(2).mtt
+    mtts2(end + 1) = S.IE(1).mtt;
+else
+    mtts2(end + 1) = S.IE(2).mtt;
+end
+mtts2 = flip(mtts2);
+
+figure
+hold on
+plot(mtts2,'--rs','LineWidth',2,...
+                        'MarkerEdgeColor','k',...
+                        'MarkerFaceColor','k',...
+                        'MarkerSize',8);
+title('Mean Transit Time (with collaterals, with thrombus)')
+xlabel('Segments in the network')
+ylabel('Mean transit time [s]');
+hold off
 
 %% Phil
 cfig=figure;clf ;
